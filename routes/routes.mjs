@@ -43,7 +43,7 @@ router.get("/get-buckets", async (req, res) => {
 /*
 
     @ Pushpendra
-    API Path - "/create-buckets"
+    API Path - "/create-bucket"
     Method Type - POST
     Desc - Created api for creating buckets
     Params - {}
@@ -51,13 +51,13 @@ router.get("/get-buckets", async (req, res) => {
 
 */
 
-router.post("/create-buckets", async (req, res) => {
+router.post("/create-bucket", async (req, res) => {
   try {
-    const body = req.body, response = await bucketsService.createBuckets(body);
+    const body = req.body, response = await bucketsService.createBucket(body);
     return res.status(response.status_code).send(response);
   } catch (err) {
     let errorMessage = err.code === 'ER_DUP_ENTRY' ? 'This bucket name is already exists' : 'Error in process';
-    console.log("Error in {/create-buckets} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
+    console.log("Error in {/create-bucket} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
     return res.status(400).json({ status: false, message: errorMessage, status_code: 400, data: [] });
   }
 });
@@ -83,6 +83,32 @@ router.get("/get-objects", async (req, res) => {
     return res.status(response.status_code).send(response);
   } catch (err) {
     console.log("Error in {/get-objects} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
+    return res.status(400).json({ status: false, message: "Error in process", status_code: 400, data: [] });
+  }
+});
+
+/*
+
+    @ Pushpendra
+    API Path - "/get-objects-by-id"
+    Method Type - GET
+    Desc - Created api for getting objects based on bucket_id
+    Params - {
+        bucket_id: number,
+        object_id: number,
+        relation_id: number
+    }
+    Date - 28/10/23
+
+*/
+
+router.get("/get-objects-by-id", async (req, res) => {
+  try {
+    const { query } = req,
+      response = await objectsService.getObjectById(query);
+    return res.status(response.status_code).sendFile(response.file_path);
+  } catch (err) {
+    console.log("Error in {/get-objects-by-id} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
     return res.status(400).json({ status: false, message: "Error in process", status_code: 400, data: [] });
   }
 });
@@ -123,7 +149,7 @@ router.post("/insert-object", async (req, res) => {
     Desc - Created api for deleting objects from bucket
     Params - {
         bucket_id: number,
-        object_id: number,
+        object_ids: number[],
         relation_id: number,
     }
     Date - 28/10/23
@@ -153,12 +179,12 @@ router.post("/delete-objects", async (req, res) => {
 
 */
 
-router.post("/delete-buckets", async (req, res) => {
+router.post("/delete-bucket", async (req, res) => {
   try {
-    let body = req.body, response = await bucketsService.deleteBuckets(body);
+    let body = req.body, response = await bucketsService.deleteBucket(body);
     return res.status(response.status_code).send(response);
   } catch (err) {
-    console.log("Error in {/delete-buckets} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
+    console.log("Error in {/delete-bucket} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
     return res.status(400).json({ status: false, message: "Error in deleting objects", status_code: 400, data: [] });
   }
 });

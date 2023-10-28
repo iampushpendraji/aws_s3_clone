@@ -1,5 +1,7 @@
 import pool from "../db/connection.mjs";
 import multerUpload from "./uploadService.mjs";
+import path from "path";
+
 
 const objectsService = {
 
@@ -17,6 +19,23 @@ const objectsService = {
     let selectQuery = "SELECT * FROM objects WHERE bucket_id = ? and relation_id = ?";
     const [rows] = await pool.query(selectQuery, [bucket_id, relation_id]);
     return { status: true, message: "Got buckets successfully", data: rows, status_code: 200 };
+  },
+
+  /*
+ 
+    @ Pushpendra
+    Method Name - {getObjectById}
+    Desc - Created method for getting objects from bucket_id
+    Date - 28/10/23
+ 
+  */
+
+  getObjectById: async function (body) {
+    let { bucket_id, object_id, relation_id } = body;
+    let selectQuery = "SELECT object_name FROM objects WHERE (bucket_id, object_id, relation_id) IN ((?, ?, ?))";
+    const [rows] = await pool.query(selectQuery, [bucket_id, object_id, relation_id]);
+    const filePath = path.join(process.cwd(), 'uploads', rows[0]);
+    return { status: true, file_path: filePath };
   },
 
   /*
@@ -90,9 +109,9 @@ const objectsService = {
   */
 
   deleteObjects: async function (body) {
-    let { bucket_id, object_id, relation_id } = body;
-    let selectQuery = "DELETE FROM objects WHERE (bucket_id, object_id, relation_id) IN ((?, ?, ?))";
-    const [rows] = await pool.query(selectQuery, [bucket_id, object_id, relation_id]);
+    let { bucket_id, object_ids, relation_id } = body;
+    let selectQuery = "DELETE FROM objects WHERE object_id IN (?) AND bucket_id = ? AND relation_id = ?";
+    const [rows] = await pool.query(selectQuery, [object_ids, bucket_id, relation_id]);
     return { status: true, message: "Deleted object successfully", data: [], status_code: 200 };
   },
 

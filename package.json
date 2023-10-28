@@ -1,7 +1,7 @@
 {
   "name": "aws-s3-clone",
   "version": "1.0.0",
-  "description": "## Getting Started",
+  "description": "This is a very AWS S3 Clone which has a very minimal services like create bucket, delete bucket, add object and delete object",
   "type": "module",
   "main": "index.js",
   "scripts": {

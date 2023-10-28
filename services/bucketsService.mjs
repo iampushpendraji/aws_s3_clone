@@ -26,7 +26,7 @@ const bucketsService = {
  
   */
 
-  createBuckets: async function (body) {
+  createBucket: async function (body) {
     let bucket_name = body.bucket_name;
     let insertQuery = `INSERT INTO buckets SET ?`;
     let obj = { bucket_name: bucket_name, created_on: +new Date(), modified_on: +new Date() }
@@ -43,7 +43,7 @@ const bucketsService = {
    
   */
 
-  deleteBuckets: async function (body) {
+  deleteBucket: async function (body) {
     let { bucket_id } = body, selectQuery = "SELECT * FROM objects WHERE bucket_id = ?";
     const [objects] = await pool.query(selectQuery, [bucket_id]);
     if (objects.length > 0) {  // If bucket is not empty then we will not delete it
