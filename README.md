@@ -13,7 +13,7 @@ Ensure you have MySQL version 8.1 installed. You can download it [here](https://
 ### Step 3: Set Up the Database
 
 1. Create a new database in your MySQL server.
-2. Import the initial data using the provided file (`dependencies/s3.sql`).
+2. Import the initial data using the provided file (`dependencies/s3_clone.sql`).
    - You can use tools like MySQL Workbench or phpMyAdmin for this step.
 
 ### Step 4: Create .env File

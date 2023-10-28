@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S3 Clone</title>
+    <title>AWS S3 Clone</title>
 </head>
+
 <body>
-    <form action="/insert-object" method="POST" enctype="multipart/form-data">
-        <input type="file" name="object" />
-        <button type="submit">Submit</button>
+    <form action="/insert-object" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
     </form>
 </body>
+
 </html>

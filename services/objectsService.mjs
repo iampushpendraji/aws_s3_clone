@@ -1,5 +1,5 @@
-import multer from "multer";
 import pool from "../db/connection.mjs";
+import multerUpload from "./uploadService.mjs";
 
 const objectsService = {
 
@@ -13,9 +13,9 @@ const objectsService = {
   */
 
   getObjects: async function (body) {
-    let bucket_id = body.bucket_id;
-    let selectQuery = "SELECT * FROM objects WHERE bucket_id = ?";
-    const [rows] = await pool.query(selectQuery, [bucket_id]);
+    let { bucket_id, relation_id } = body;
+    let selectQuery = "SELECT * FROM objects WHERE bucket_id = ? and relation_id = ?";
+    const [rows] = await pool.query(selectQuery, [bucket_id, relation_id]);
     return { status: true, message: "Got buckets successfully", data: rows, status_code: 200 };
   },
 
@@ -28,35 +28,73 @@ const objectsService = {
  
   */
 
-  insertObject: async function (req) {
-
-
+  insertObject: async function (req, res) {
+    let { bucket_id, is_folder, relation_id, folder_name } = req.body;
+    if (is_folder == 0) {
+      // Use the `upload.single` middleware for handling a single file upload
+      let response1 = await this.uploadFileToDB(req, res);  // Getting file into db
+      if (response1) {
+        let object_name = req.file.object_name; // here we are getting file name
+        let insertQuery = `INSERT INTO objects SET ?`;
+        let obj = { bucket_id: bucket_id, relation_id: relation_id ? relation_id : 0, object_name: object_name, is_folder: 0, file_name: req.file.originalname, created_on: +new Date(), modified_on: +new Date() };
+        const [rows] = await pool.query(insertQuery, obj);
+        return { status: true, message: "Object Inserted successfully", data: [], status_code: 200 };
+      }
+      else {
+        return { status: false, message: "Error in upload object", data: [], status_code: 400 };
+      }
+    }
+    else if (is_folder == 1) {
+      let insertQuery = `INSERT INTO objects SET ?`;
+      let obj = { object_name: folder_name, bucket_id: bucket_id, relation_id: relation_id, is_folder: 1, file_name: "folder", created_on: +new Date(), modified_on: +new Date() }
+      const [rows] = await pool.query(insertQuery, obj);
+      return { status: true, message: "Object Inserted successfully", data: [], status_code: 200 };
+    }
+    else {
+      return { status: false, message: "Please send is_folder", data: [], status_code: 400 };
+    }
   },
 
   /*
  
     @ Pushpendra
-    Method Name - {insertObject}
-    Desc - Created method for getting objects from bucket_id
+    Method Name - {uploadFileToDB}
+    Desc - Created method for uploading file to db
     Date - 28/10/23
  
   */
 
-  insertFile(req, callback) {
-    const storage = multer.diskStorage({
-      destination: function (req, file, cb) {
-        return cb(null, './uploads');
-      },
-      filename: function (req, file, cb) {
-        const fileUniquName = file.originalname;
-        return cb(null, fileUniquName);
-      }
+  uploadFileToDB(req, res) {
+    return new Promise((response) => {
+      multerUpload.single('file')(req, res, (err) => {
+        if (err) {
+          return response(false);
+        }
+
+        if (!req.file) {
+          return response(false);
+        }
+
+        return response(true);
+      });
     });
+  },
 
-    const upload = multer({ storage });
-    callback(false);
-  }
+  /*
+ 
+    @ Pushpendra
+    Method Name - {deleteObjects}
+    Desc - Created method for deleting objects from bucket
+    Date - 28/10/23
+ 
+  */
 
+  deleteObjects: async function (body) {
+    let { bucket_id, object_id, relation_id } = body;
+    let selectQuery = "DELETE FROM objects WHERE (bucket_id, object_id, relation_id) IN ((?, ?, ?))";
+    const [rows] = await pool.query(selectQuery, [bucket_id, object_id, relation_id]);
+    return { status: true, message: "Deleted object successfully", data: [], status_code: 200 };
+  },
 
 }
 
