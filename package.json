@@ -1,5 +1,5 @@
 {
-  "name": "s3-clone",
+  "name": "aws-s3-clone",
   "version": "1.0.0",
   "description": "## Getting Started",
   "type": "module",

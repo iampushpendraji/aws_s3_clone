@@ -1,8 +1,6 @@
-# Welcome To AWS S3 clone 
+# Welcome To AWS S3 Clone 
 
 ## Getting Started
-
-Thank you for choosing our User Authentication System! Follow these steps to set up the project on your local machine:
 
 ### Step 1: Install Node.js
 
