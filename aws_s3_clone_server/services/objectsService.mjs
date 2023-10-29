@@ -34,8 +34,8 @@ const objectsService = {
     let { bucket_id, object_id, relation_id } = body;
     let selectQuery = "SELECT object_name FROM objects WHERE (bucket_id, object_id, relation_id) IN ((?, ?, ?))";
     const [rows] = await pool.query(selectQuery, [bucket_id, object_id, relation_id]);
-    const filePath = path.join(process.cwd(), 'uploads', rows[0]);
-    return { status: true, file_path: filePath };
+    const filePath = path.join(process.cwd(), 'uploads', rows[0]["object_name"]);
+    return { status: true, status_code: 200, data: [], file_path: filePath };
   },
 
   /*
@@ -115,10 +115,34 @@ const objectsService = {
   */
 
   deleteObjects: async function (body) {
-    let { bucket_id, object_ids, relation_id } = body;
-    let selectQuery = "DELETE FROM objects WHERE object_id IN (?) AND bucket_id = ? AND relation_id = ?";
-    const [rows] = await pool.query(selectQuery, [object_ids, bucket_id, relation_id]);
-    return { status: true, message: "Deleted object successfully", data: [], status_code: 200 };
+    let { bucket_id, object_ids, relation_id, isFolder } = body;
+    if(isFolder) {  // If user is deleting folder
+      let selectQuery = "SELECT * FROM objects WHERE bucket_id = ?";
+      const [rows] = await pool.query(selectQuery, [bucket_id]);
+      let allObjectsOfBucket = JSON.parse(JSON.stringify(rows));
+    }
+    else {  // If user is deleting file
+      let deleteQuery = "DELETE FROM objects WHERE object_id IN (?) AND bucket_id = ? AND relation_id = ?";
+      const [rows] = await pool.query(deleteQuery, [object_ids, bucket_id, relation_id]);
+      return { status: true, message: "Deleted object successfully", data: [], status_code: 200 };
+    }
+  },
+
+
+  /*
+ 
+    @ Pushpendra
+    Method Name - {getRelationById}
+    Desc - Created method for getting objects from bucket_id
+    Date - 28/10/23
+ 
+  */
+
+  getRelationById: async function (body) {
+    let { bucket_id, object_id } = body;
+    let selectQuery = "SELECT * FROM objects WHERE bucket_id = ? AND object_id = ?";
+    const [rows] = await pool.query(selectQuery, [bucket_id, object_id]);
+    return { status: true, message: "Relation Id got successfully", data: rows, status_code: 200 };
   },
 
 }

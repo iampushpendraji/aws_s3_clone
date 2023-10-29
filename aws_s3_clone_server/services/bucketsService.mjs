@@ -57,13 +57,13 @@ const bucketsService = {
   /*
  
     @ Pushpendra
-    Method Name - {deleteObjects}
+    Method Name - {emptyBucket}
     Desc - Created method for deleting objects from bucket
     Date - 28/10/23
  
   */
 
-  emptyBucekt: async function (body) {
+  emptyBucket: async function (body) {
     let { bucket_id } = body;
     let selectQuery = "DELETE FROM objects WHERE bucket_id = ?";
     const [rows] = await pool.query(selectQuery, [bucket_id]);

@@ -34,4 +34,20 @@ export class ApiCallServiceService {
     return this._http.get<any>(`${this.api_url}/get-objects-by-id`, { params: obj });
   }
 
+  getRelationId(obj: { object_id: number, bucket_id: number }): Observable<any> {
+    return this._http.get<any>(`${this.api_url}/get-relation-id`, { params: obj });
+  }
+
+  deleteBucket(obj: { bucket_id: number }): Observable<any> {
+    return this._http.post<any>(`${this.api_url}/delete-bucket`, obj);
+  }
+
+  truncatBucket(obj: { bucket_id: number }): Observable<any> {
+    return this._http.post<any>(`${this.api_url}/empty-buckets`, obj);
+  }
+  
+  deleteObjects(obj: { bucket_id: number, object_ids: number[], relation_id: number, isFolder: boolean}): Observable<any> {
+    return this._http.post<any>(`${this.api_url}/delete-objects`, obj);
+  }
+
 }

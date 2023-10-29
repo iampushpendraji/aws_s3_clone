@@ -42,8 +42,8 @@ export class CreateObjectModalComponent {
     this._apiService.createFolder(obj).subscribe({
       next: data => {
         if (data.status_code == 200) {
-          this.afterUploadObject.emit();
           this.resetModal();
+          this.afterUploadObject.emit();
           document.getElementById('close-button')?.click();
         }
         else {
@@ -69,6 +69,7 @@ export class CreateObjectModalComponent {
       next: data => {
         if (data.status_code == 200) {
           this.afterUploadObject.emit();
+          this.resetModal();
           document.getElementById('close-button')?.click();
         }
         else {
@@ -84,9 +85,18 @@ export class CreateObjectModalComponent {
   // Function for reset
   resetModal() {
     this.selectedFile = null;
-    if(this.isAddFolder) {
+    if (this.isAddFolder) {
       let folder_name: any = document.getElementById('folder-name');
       folder_name.value = '';
     }
+    else {
+      this.resetFileInput();
+    }
+  }
+
+  // Function for resetting input type
+  resetFileInput() {
+    var fileInput: any = document.getElementById('fileInput');
+    fileInput.value = null;
   }
 }

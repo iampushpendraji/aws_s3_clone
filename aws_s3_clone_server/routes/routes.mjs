@@ -178,6 +178,7 @@ router.post("/insert-folder", async (req, res) => {
         bucket_id: number,
         object_ids: number[],
         relation_id: number,
+        isFolder: boolean
     }
     Date - 28/10/23
 
@@ -231,12 +232,38 @@ router.post("/delete-bucket", async (req, res) => {
 
 router.post("/empty-buckets", async (req, res) => {
   try {
-    let body = req.body, response = await bucketsService.emptyBucekt(body);
+    let body = req.body, response = await bucketsService.emptyBucket(body);
     return res.status(response.status_code).send(response);
   } catch (err) {
     console.log("Error in {/empty-buckets} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
     return res.status(400).json({ status: false, message: "Error in deleting objects", status_code: 400, data: [] });
   }
 });
+
+/*
+
+    @ Pushpendra
+    API Path - "/get-relation-id"
+    Method Type - GET
+    Desc - Created api for getting relation id from object id
+    Params - {
+        bucket_id: number,
+        object_id: number,
+    }
+    Date - 29/10/23
+
+*/
+
+router.get("/get-relation-id", async (req, res) => {
+  try {
+    const { query } = req,
+      response = await objectsService.getRelationById(query);
+    return res.status(response.status_code).send(response);
+  } catch (err) {
+    console.log("Error in {/get-relation-id} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
+    return res.status(400).json({ status: false, message: "Error in process", status_code: 400, data: [] });
+  }
+});
+
 
 export default router;
