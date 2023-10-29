@@ -12,6 +12,7 @@
                 <span *ngIf="!obj.is_folder" class="me-2"><i class="bi bi-file-earmark"></i></span>
                 <span>{{ obj.file_name }}</span>
                 <span class="float-end btn btn-sm btn-danger" (click)="deleteObject(obj)"><i class="bi bi-trash-fill"></i></span>
+                <span class="float-end btn btn-sm btn-primary me-2" (click)="getObjectById(obj.object_id, 'download')"><i class="bi bi-cloud-arrow-down-fill"></i></span>
             </div>
         </div>
     </div>

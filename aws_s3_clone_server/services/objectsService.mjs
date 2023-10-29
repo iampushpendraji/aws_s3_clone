@@ -1,6 +1,5 @@
 import pool from "../db/connection.mjs";
 import multerUpload from "./uploadService.mjs";
-import path from "path";
 
 
 const objectsService = {
@@ -32,10 +31,9 @@ const objectsService = {
 
   getObjectById: async function (body) {
     let { bucket_id, object_id, relation_id } = body;
-    let selectQuery = "SELECT object_name FROM objects WHERE (bucket_id, object_id, relation_id) IN ((?, ?, ?))";
+    let selectQuery = "SELECT object_name, file_name FROM objects WHERE (bucket_id, object_id, relation_id) IN ((?, ?, ?))";
     const [rows] = await pool.query(selectQuery, [bucket_id, object_id, relation_id]);
-    const filePath = path.join(process.cwd(), 'uploads', rows[0]["object_name"]);
-    return { status: true, status_code: 200, data: [], file_path: filePath };
+    return { status: true, message: 'File name got successfully', data: rows[0], status_code: 200 };
   },
 
   /*

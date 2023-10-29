@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ApiCallServiceService } from '../services/api-call-service.service';
+import { environment } from 'environments/environment.prod';
 
 @Component({
   selector: 'app-bucket-desc',
@@ -59,8 +60,8 @@ export class BucketDescComponent implements OnInit {
     });
   }
 
-  // Function for getting object info
-  getObjectById(object_id: number) {
+  // Function for getting object info and preview it on new tab
+  getObjectById(object_id: number, callFrom: string) {
     let obj = {
       object_id: object_id,
       bucket_id: this.currentBucketId,
@@ -70,7 +71,13 @@ export class BucketDescComponent implements OnInit {
       next: data => {
         console.log(data);
         if (data.status_code == 200) {
-          
+          let { file_name, object_name } = data.data;
+          if (callFrom == 'download') {
+            this.downloadObject(object_name, file_name);
+          }
+          else {
+            window.open(`${environment.api_url}/download/${object_name}`, '_blank');
+          }
         }
         else {
           console.log('Error in {getBucketInfo} in {bucket-desc-component}');
@@ -82,6 +89,31 @@ export class BucketDescComponent implements OnInit {
     });
   }
 
+  // Function is for download object
+  downloadObject(fileName: string, fileOriginalName: string) {
+    this._apiService.downloadFile(fileName).subscribe(
+      (data) => {
+        // Create a Blob from the response
+        const blob = new Blob([data]);
+
+        // Create a link and trigger the download
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileOriginalName;
+
+        // Append the link to the body and click it
+        document.body.appendChild(link);
+        link.click();
+
+        // Remove the link from the body
+        document.body.removeChild(link);
+      },
+      (error) => {
+        console.error('Error downloading file', error);
+      }
+    );
+  }
+
   // Function for handle click on object list
   objectClickHandler(obj: any) {
     console.log(obj);
@@ -89,7 +121,7 @@ export class BucketDescComponent implements OnInit {
       this.jumpToRoute(`/${this.currentBucketId}/${obj.object_id}`);
     }
     else {
-      this.getObjectById(obj.object_id);
+      this.getObjectById(obj.object_id, 'preview');
     }
   }
 
@@ -103,7 +135,7 @@ export class BucketDescComponent implements OnInit {
       next: data => {
         if (data.status_code == 200) {
           let path = '/';
-          if(data.data.length > 0) {
+          if (data.data.length > 0) {
             let relationId = data.data[0].relation_id;
             path = `${this.currentBucketId}/${relationId}`;
           }

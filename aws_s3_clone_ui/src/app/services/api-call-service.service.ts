@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'environments/environment.prod';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiCallServiceService {
-  api_url: string = 'http://localhost:3000';
+  api_url: string = environment.api_url;
 
   constructor(private _http: HttpClient) { }
 
@@ -45,9 +46,14 @@ export class ApiCallServiceService {
   truncatBucket(obj: { bucket_id: number }): Observable<any> {
     return this._http.post<any>(`${this.api_url}/empty-buckets`, obj);
   }
-  
-  deleteObjects(obj: { bucket_id: number, object_ids: number[], relation_id: number, isFolder: boolean}): Observable<any> {
+
+  deleteObjects(obj: { bucket_id: number, object_ids: number[], relation_id: number, isFolder: boolean }): Observable<any> {
     return this._http.post<any>(`${this.api_url}/delete-objects`, obj);
+  }
+
+  downloadFile(fileName: string): Observable<Blob> {
+    const downloadUrl = `${this.api_url}/download/${fileName}`;
+    return this._http.get(downloadUrl, { responseType: 'blob' });
   }
 
 }

@@ -109,7 +109,7 @@ router.get("/get-objects-by-id", async (req, res) => {
   try {
     const { query } = req,
       response = await objectsService.getObjectById(query);
-    return res.status(response.status_code).sendFile(response.file_path);
+    return res.status(response.status_code).json(response);
   } catch (err) {
     console.log("Error in {/get-objects-by-id} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
     return res.status(400).json({ status: false, message: "Error in process", status_code: 400, data: [] });
