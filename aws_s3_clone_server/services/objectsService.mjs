@@ -42,36 +42,42 @@ const objectsService = {
  
     @ Pushpendra
     Method Name - {insertObject}
-    Desc - Created method for getting objects from bucket_id
+    Desc - Created method for inserting objects
     Date - 28/10/23
  
   */
 
   insertObject: async function (req, res) {
-    let { bucket_id, is_folder, relation_id, folder_name } = req.body;
-    if (is_folder == 0) {
-      // Use the `upload.single` middleware for handling a single file upload
-      let response1 = await this.uploadFileToDB(req, res);  // Getting file into db
-      if (response1) {
-        let object_name = req.file.object_name; // here we are getting file name
-        let insertQuery = `INSERT INTO objects SET ?`;
-        let obj = { bucket_id: bucket_id, relation_id: relation_id ? relation_id : 0, object_name: object_name, is_folder: 0, file_name: req.file.originalname, created_on: +new Date(), modified_on: +new Date() };
-        const [rows] = await pool.query(insertQuery, obj);
-        return { status: true, message: "Object Inserted successfully", data: [], status_code: 200 };
-      }
-      else {
-        return { status: false, message: "Error in upload object", data: [], status_code: 400 };
-      }
-    }
-    else if (is_folder == 1) {
+    // Use the `upload.single` middleware for handling a single file upload
+    let response1 = await this.uploadFileToDB(req, res);  // Getting file into db
+    if (response1) {
+      let object_name = req.file.object_name; // here we are getting file name
+      let { bucket_id, relation_id } = JSON.parse(req.body.data);
       let insertQuery = `INSERT INTO objects SET ?`;
-      let obj = { object_name: folder_name, bucket_id: bucket_id, relation_id: relation_id, is_folder: 1, file_name: "folder", created_on: +new Date(), modified_on: +new Date() }
+      let obj = { bucket_id: bucket_id, relation_id: relation_id ? relation_id : 0, object_name: object_name, is_folder: 0, file_name: req.file.originalname, created_on: +new Date(), modified_on: +new Date() };
       const [rows] = await pool.query(insertQuery, obj);
       return { status: true, message: "Object Inserted successfully", data: [], status_code: 200 };
     }
     else {
-      return { status: false, message: "Please send is_folder", data: [], status_code: 400 };
+      return { status: false, message: "Error in upload object", data: [], status_code: 400 };
     }
+  },
+
+  /*
+ 
+    @ Pushpendra
+    Method Name - {insertFolder}
+    Desc - Created method for inserting folder
+    Date - 28/10/23
+ 
+  */
+
+  insertFolder: async function (body) {
+    let { bucket_id, relation_id, folder_name } = body;
+    let insertQuery = `INSERT INTO objects SET ?`;
+    let obj = { object_name: folder_name, bucket_id: bucket_id, relation_id: relation_id, is_folder: 1, file_name: folder_name, created_on: +new Date(), modified_on: +new Date() }
+    const [rows] = await pool.query(insertQuery, obj);
+    return { status: true, message: "Folder Inserted successfully", data: [], status_code: 200 };
   },
 
   /*

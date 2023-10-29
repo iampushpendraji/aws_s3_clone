@@ -27,9 +27,9 @@ const bucketsService = {
   */
 
   createBucket: async function (body) {
-    let bucket_name = body.bucket_name;
+    let { bucket_name, bucket_description } = body;
     let insertQuery = `INSERT INTO buckets SET ?`;
-    let obj = { bucket_name: bucket_name, created_on: +new Date(), modified_on: +new Date() }
+    let obj = { bucket_name: bucket_name, bucket_description: bucket_description, created_on: +new Date(), modified_on: +new Date() }
     const [rows] = await pool.query(insertQuery, obj);
     return { status: true, message: "Object Inserted successfully", data: [], status_code: 200 };
   },

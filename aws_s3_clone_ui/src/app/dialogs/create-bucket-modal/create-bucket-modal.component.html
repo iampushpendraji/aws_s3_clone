@@ -1,0 +1,31 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Create Bucket</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Bucket Create Form -->
+        <form #bucketForm="ngForm" (ngSubmit)="submitHandler(bucketForm)">
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="bucket-name" class="form-label">Bucket Name <span class="text-danger">*</span></label>
+                    <input id="bucket-name" type="text" class="form-control" name="bucket_name" ngModel
+                        #bucket_name="ngModel" required [ngClass]="( (bucket_name.dirty || bucket_name.touched) || isBucketNameEmpty ) && ( bucket_name?.hasError('required')) ?
+                        'is-invalid' : ''" />
+                </div>
+                <div>
+                    <label for="bucket-description" class="form-label">Bucket Description</label>
+                    <textarea id="bucket-description" type="text" class="form-control" name="bucket_description" ngModel
+                        #bucket_description="ngModel"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="close-button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

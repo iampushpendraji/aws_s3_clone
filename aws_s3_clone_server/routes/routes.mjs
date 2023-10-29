@@ -16,7 +16,7 @@ const router = Router();
 */
 
 router.get("/", (req, res) => {
-  return res.render("home");
+  return res.send("AWS S3 CLONE SERVER IS WORKING FINE !!");
 });
 
 /*
@@ -46,7 +46,10 @@ router.get("/get-buckets", async (req, res) => {
     API Path - "/create-bucket"
     Method Type - POST
     Desc - Created api for creating buckets
-    Params - {}
+    Params - {
+      bucket_name: string,
+      bucket_description?: string
+    }
     Date - 28/10/23
 
 */
@@ -123,8 +126,6 @@ router.get("/get-objects-by-id", async (req, res) => {
         bucket_id: number,
         object: file,
         relation_id: number,
-        is_folder: 1 | 0,
-        folder_name?: string
     }
     Date - 28/10/23
 
@@ -133,6 +134,32 @@ router.get("/get-objects-by-id", async (req, res) => {
 router.post("/insert-object", async (req, res) => {
   try {
     let response = await objectsService.insertObject(req, res);
+    return res.status(response.status_code).send(response);
+  } catch (err) {
+    let errorMessage = err.code === 'ER_DUP_ENTRY' ? 'This object name is already exists' : 'Error in process';
+    console.log("Error in {/insert-object} in {routes.mjs}, ERROR ----->>>>> \n \n", err);
+    return res.status(400).json({ status: false, message: errorMessage, status_code: 400, data: [] });
+  }
+});
+
+/*
+
+    @ Pushpendra
+    API Path - "/insert-object"
+    Method Type - POST
+    Desc - Created api inserting objects in bucket based on bucket_id
+    Params - {
+        bucket_id: number,
+        relation_id: number,
+        folder_name: string
+    }
+    Date - 29/10/23
+
+*/
+
+router.post("/insert-folder", async (req, res) => {
+  try {
+    let response = await objectsService.insertFolder(req.body);
     return res.status(response.status_code).send(response);
   } catch (err) {
     let errorMessage = err.code === 'ER_DUP_ENTRY' ? 'This object name is already exists' : 'Error in process';

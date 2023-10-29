@@ -1,0 +1,16 @@
+<button class="btn btn-primary">Buckets List</button>
+<button class="btn btn-info ms-2" (click)="isAddFolder = false" data-bs-toggle="modal" data-bs-target="#object-modal">+ Add Item</button>
+<button class="btn btn-warning ms-2" (click)="isAddFolder = true" data-bs-toggle="modal" data-bs-target="#object-modal">+ Add Folder</button>
+<button class="btn btn-secondary float-end"><< Back</button>
+
+<div>
+    <div *ngFor="let obj of objectsList">
+
+    </div>
+</div>
+
+
+<!-- Create Object Modal -->
+<div class="modal fade" id="object-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <app-create-object-modal [isAddFolder]="isAddFolder" [bucket_id]="currentBucketId" [relation_id]="currentRelationId" (afterUploadObject)="getBucketInfo"/>
+</div>

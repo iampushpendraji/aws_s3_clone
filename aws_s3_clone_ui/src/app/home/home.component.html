@@ -1,0 +1,36 @@
+<!-- bucket-list.component.html -->
+
+<div class="container mt-4">
+    <h2>Buckets</h2>
+    <div class="row mt-3">
+
+          <!-- Create Bucket Card -->
+          <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Create New Bucket</h5>
+                    <p class="card-text">Click the button below to create a new bucket.</p>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">Create Bucket</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bucket Cards -->
+        <div class="col-md-4 mb-3" *ngFor="let bucket of buckets">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ bucket.bucket_name }}</h5>
+                    <p class="card-text">{{ bucket.bucket_description }}</p>
+                    <button class="btn btn-primary" (click)="jumpToPage(bucket.bucket_id)">View Bucket</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Create Bucket Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <app-create-bucket-modal (afterCreateBucket)="getBucketList"/>
+</div>
