@@ -1,6 +1,11 @@
 import pool from "../db/connection.mjs";
 import multerUpload from "./uploadService.mjs";
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import fs from 'fs';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const objectsService = {
 
@@ -46,7 +51,10 @@ const objectsService = {
   */
 
   insertObject: async function (req, res) {
-    // Use the `upload.single` middleware for handling a single file upload
+    const folderPath = join(__dirname, '..', 'uploads');
+    if (!fs.existsSync(folderPath)) {    // Check if the folder exists
+      fs.mkdirSync(folderPath);    // If not, create the folder
+    }
     let response1 = await this.uploadFileToDB(req, res);  // Getting file into db
     if (response1) {
       let object_name = req.file.object_name; // here we are getting file name
