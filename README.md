@@ -67,7 +67,7 @@ cd aws_s3_clone_ui
 npm i
 ```
 
-### Step 4: You can start the server now
+### Step 5: You can start the angular server now
 
 ```bash
 npm start

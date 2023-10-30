@@ -114,18 +114,51 @@ const objectsService = {
 
   deleteObjects: async function (body) {
     let { bucket_id, object_ids, relation_id, isFolder } = body;
-    if(isFolder) {  // If user is deleting folder
+    if (isFolder) {  // If user is deleting folder
       let selectQuery = "SELECT * FROM objects WHERE bucket_id = ?";
       const [rows] = await pool.query(selectQuery, [bucket_id]);
-      let allObjectsOfBucket = JSON.parse(JSON.stringify(rows));
+      let allObjectsOfBucket = JSON.parse(JSON.stringify(rows));  // Getting all the objects from bucket
+      let deleteQuery = "DELETE FROM objects WHERE object_id IN (?) AND bucket_id = ?";
+      let allObjectIds = this.findRelatedObjects(allObjectsOfBucket, object_ids[0]); // Getting all the objects which are in folder
+      allObjectIds.push(rows[0].object_id);
+      const [row] = await pool.query(deleteQuery, [allObjectIds, bucket_id]);
+      return { status: true, message: "Deleted folder successfully", data: [], status_code: 200 };
     }
     else {  // If user is deleting file
       let deleteQuery = "DELETE FROM objects WHERE object_id IN (?) AND bucket_id = ? AND relation_id = ?";
       const [rows] = await pool.query(deleteQuery, [object_ids, bucket_id, relation_id]);
       return { status: true, message: "Deleted object successfully", data: [], status_code: 200 };
+
     }
   },
 
+  /*
+ 
+    @ Pushpendra
+    Method Name - {findRelatedObjects}
+    Desc - Created method for getting all objects which are in any folder
+    Date - 30/10/23
+ 
+  */
+
+  findRelatedObjects: function (objects, startRelationId) {
+    const relatedObjectIds = [];
+    const visitedObjectIds = new Set();
+
+    function findObjectsWithRelationId(relationId) {
+      const foundObjects = objects.filter(obj => obj.relation_id === relationId && !visitedObjectIds.has(obj.object_id));
+
+      foundObjects.forEach(obj => {
+        visitedObjectIds.add(obj.object_id);
+        relatedObjectIds.push(obj.object_id);
+        findObjectsWithRelationId(obj.object_id); // Recursive call
+      });
+    }
+
+    findObjectsWithRelationId(startRelationId);
+
+    return relatedObjectIds;
+  },
 
   /*
  
