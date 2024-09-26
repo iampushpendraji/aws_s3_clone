@@ -64,10 +64,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "aws_s3_clone_ui:build:production"
+              "buildTarget": "aws_s3_clone_ui:build:production"
             },
             "development": {
-              "browserTarget": "aws_s3_clone_ui:build:development"
+              "buildTarget": "aws_s3_clone_ui:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -75,7 +75,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "aws_s3_clone_ui:build"
+            "buildTarget": "aws_s3_clone_ui:build"
           }
         },
         "test": {
